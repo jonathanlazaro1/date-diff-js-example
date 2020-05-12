@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Diferença de datas</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous" />
+</head>
+
+<body>
+    <div class="container-fluid">
+        <!-- Início Cabeçalho -->
+        <header>
+            <div class="row">
+                <div class="col">
+                    <div class="jumbotron jumbotron-fluid">
+                        <div class="container">
+                            <h1 class="display-4">Cálculo de dias em uma data</h1>
+                            <p class="lead">Aqui você pode calcular o número de dias de uma data em relação à outra.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Fim Cabeçalho -->
+        <!-- Início Seção Principal -->
+        <main>
+            <div class="row">
+                <div class="col">
+                    <div class="row">
+                        <div class="col">
+                            <h2>Cálculo através da data do computador</h2>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <p>O cálculo abaixo leva em conta a data atual do computador.</p>
+                            <p>Logo, se ela estiver errada, <span class="text-danger">este cálculo também estará</span>!
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="birthDate" class="form-label">Data de nascimento</label>
+                            <input type="date" class="form-control" name="birthDate" id="birthDate">
+                        </div>
+                        <div class="col mt-4">
+                            <button class="btn btn-primary">Calcular</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="alert alert-primary mt-2">
+                                Data do computador:
+                                <b>
+                                    <span id="computerDate"></span>
+                                </b>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="row">
+                        <div class="col">
+                            <h2>Cálculo através de data obtida online</h2>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <p>O cálculo abaixo utiliza uma data obtida da Internet, que deve estar sempre correta (em
+                                teoria).</p>
+                            <p>Porém, claro, <span class="text-danger">esta versão precisa de Internet para
+                                    funcionar</span>!</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="birthDate" class="form-label">Data de nascimento</label>
+                            <input type="date" class="form-control" name="birthDate" id="birthDate">
+                        </div>
+                        <div class="col mt-4">
+                            <button class="btn btn-primary">Calcular</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="alert alert-primary mt-2">
+                                Data obtida online:
+                                <b>
+                                    <span id="onlineDate">Carregando...</span>
+                                </b>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!-- Fim Seção Principal -->
+    </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="./localDateDiff.js"></script>
+    <script>
+        var localDate = new Date();
+        var onlineDate = new Date();
+
+        (function () {
+            document.getElementById("computerDate").appendChild(document.createTextNode(computerDate.toLocaleDateString('pt-BR')));
+
+            fetch('http://worldtimeapi.org/api/timezone/America/Sao_Paulo').then(response => {
+                response.json().then(result => {
+                    document.getElementById('onlineDate').innerHTML = JSON.stringify(result);
+                })
+            })
+        })();
+    </script>
+</body>
+
+</html>
