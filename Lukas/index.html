@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<HTML>
+
+<head>
+	<!-- Comentei apenas para não ficar dando erro porque não tenho o arquivo. -->
+	<!-- <link rel="icon" href="icon.png"> -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<!-- 
+			Tirando casos específicos, não é uma boa prática inserir scripts no head da página. 
+		 Um script muito pesado vai bloquear o carregamento do restante da página,
+		 o que deixa uma enorme tela branca e a sensação, para o usuário, de que seu site é "lento" 
+		-->
+	<!-- <script src="javascript.js"></script> -->
+	<meta charset="utf-8" />
+	<title>
+		Feng.HTML
+	</title>
+	<!-- Mesma coisa do ícone, eu não tenho o CSS. -->
+	<!-- <link rel="stylesheet" type="text/css" href="css.css"/> -->
+</head>
+
+<body>
+	<h1 id="top" align="center">FengHTML</h1>
+	<br />
+	<div align="center">
+		<input id="inputDataNasc" type="date"></input>
+		<br />
+		<br />
+		<button id="normal" onclick="getFengShuiMoodAccordingToDate()">Caucular</h1>
+			<button id="net" onclick="nclick()">Caucular </h1>
+	</div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.30.1/date_fns.js"></script>
+	<script src="javascript.js"></script>
+</body>
+
+</HTML>
