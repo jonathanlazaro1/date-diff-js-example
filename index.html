@@ -5,6 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Diferença de datas</title>
+    <!-- Bootstrap. É ele quem deixa a página toda estilizada com as classes css que estão ao longo do HTML. -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous" />
 </head>
@@ -37,17 +38,20 @@
                     <div class="row">
                         <div class="col">
                             <p>O cálculo abaixo leva em conta a data atual do computador.</p>
-                            <p>Logo, se ela estiver errada, <span class="text-danger">este cálculo também estará</span>!
+                            <p>Logo, se ela estiver errada, <b><span class="text-danger">este cálculo também
+                                        estará</span></b>!
                             </p>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6">
-                            <label for="birthDate" class="form-label">Data de nascimento</label>
-                            <input type="date" class="form-control" name="birthDate" id="birthDate">
+                            <label for="inputComputerBirthDate" class="form-label">Data de nascimento</label>
+                            <input type="date" class="form-control" name="inputComputerBirthDate"
+                                id="inputComputerBirthDate" oninput="inputComputerBirthDateHasChanged(this.value)">
                         </div>
                         <div class="col mt-4">
-                            <button class="btn btn-primary">Calcular</button>
+                            <button class="btn btn-primary" id='btnComputerCalc' disabled='true'
+                                onclick="printDaysDiff(computerDate, inputComputerBirthDate.value)">Calcular</button>
                         </div>
                     </div>
                     <div class="row">
@@ -71,17 +75,19 @@
                         <div class="col">
                             <p>O cálculo abaixo utiliza uma data obtida da Internet, que deve estar sempre correta (em
                                 teoria).</p>
-                            <p>Porém, claro, <span class="text-danger">esta versão precisa de Internet para
-                                    funcionar</span>!</p>
+                            <p>Porém, claro, <b><span class="text-danger">esta versão precisa de Internet para
+                                        funcionar</span></b>!</p>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6">
-                            <label for="birthDate" class="form-label">Data de nascimento</label>
-                            <input type="date" class="form-control" name="birthDate" id="birthDate">
+                            <label for="inputOnlineBirthDate" class="form-label">Data de nascimento</label>
+                            <input type="date" class="form-control" name="inputOnlineBirthDate"
+                                id="inputOnlineBirthDate" oninput="inputOnlineBirthDateHasChanged(this.value)">
                         </div>
                         <div class="col mt-4">
-                            <button class="btn btn-primary">Calcular</button>
+                            <button class="btn btn-primary" id='btnOnlineCalc' disabled='true'
+                                onclick="printDaysDiff(onlineDate, inputOnlineBirthDate.value)">Calcular</button>
                         </div>
                     </div>
                     <div class="row">
@@ -101,22 +107,73 @@
     </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="./localDateDiff.js"></script>
-    <script>
-        var localDate = new Date();
-        var onlineDate = new Date();
+    <!-- Início Scripts -->
 
+    <!-- date-fns. Biblioteca muito útil para fazer várias operações com datas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.30.1/date_fns.js"></script>
+    <script>
+        // Variáveis para armazenar as duas datas
+        let computerDate = new Date();
+        let onlineDate;
+
+        // Variáveis que fazem referência aos dois botões de calcular
+        let btnComputerCalc = document.getElementById('btnComputerCalc');
+        let btnOnlineCalc = document.getElementById('btnOnlineCalc');
+
+        // Variáveis que fazem referência aos dois inputs
+        let inputComputerBirthDate = document.getElementById('inputComputerBirthDate');
+        let inputOnlineBirthDate = document.getElementById('inputOnlineBirthDate');
+
+        // Função para ativar ou desativar um botão, de acordo com condições
+        function enableOrDisableCalcButton(btn, inputValue, todayDate) {
+            let inputIsEmpty = !inputValue || inputValue === '';
+
+            const convertedDate = dateFns.parse(inputValue);
+            let inputIsInvalid = !dateFns.isDate(convertedDate);
+            let todayIsInvalid = !dateFns.isDate(todayDate);
+            let inputIsGreaterThanToday = dateFns.differenceInDays(todayDate, convertedDate) < 1;
+
+            btn.disabled = inputIsEmpty || todayIsInvalid || inputIsInvalid || inputIsGreaterThanToday;
+        }
+
+        // Função que executa assim que se carrega a página, para preparar os dados, pegar a data online e fazer as primeiras validações
         (function () {
+            enableOrDisableCalcButton(btnComputerCalc, inputComputerBirthDate.value, computerDate);
             document.getElementById("computerDate").appendChild(document.createTextNode(computerDate.toLocaleDateString('pt-BR')));
 
             fetch('http://worldtimeapi.org/api/timezone/America/Sao_Paulo').then(response => {
-                response.json().then(result => {
-                    document.getElementById('onlineDate').innerHTML = JSON.stringify(result);
-                })
-            })
+                if (response.ok) {
+                    response.json().then(result => {
+                        onlineDate = new Date(result.datetime);
+                        document.getElementById('onlineDate').innerHTML = onlineDate.toLocaleDateString('pt-BR');
+                        enableOrDisableCalcButton(btnOnlineCalc, inputOnlineBirthDate.value, onlineDate);
+                    })
+                } else {
+                    document.getElementById('onlineDate').innerHTML = "Falha ao obter a data online!";
+                }
+            }).catch(() => {
+                document.getElementById('onlineDate').innerHTML = "Falha ao obter a data online!";
+            });
         })();
+
+
+        // Função que responde ao evento de input para data do computador
+        function inputComputerBirthDateHasChanged(value) {
+            enableOrDisableCalcButton(btnComputerCalc, value, computerDate);
+        }
+
+        // Função que responde ao evento de input para data online
+        function inputOnlineBirthDateHasChanged(value) {
+            enableOrDisableCalcButton(btnOnlineCalc, value, onlineDate);
+        }
+
+        // Função que imprime a diferença em dias da data informada.
+        function printDaysDiff(todayDate, inputValue) {
+            let daysDiff = dateFns.differenceInDays(todayDate, inputValue);
+            alert(`A diferença em dias para a data selecionada é de ${daysDiff} ${daysDiff > 1 ? 'dias' : 'dia'}.`);
+        }
     </script>
+    <!-- Fim Scripts -->
 </body>
 
 </html>
